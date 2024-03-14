@@ -1,7 +1,7 @@
 package main
 
 import (
-	autres_pages "groupietracker/Autres_Pages"
+	autres_pages "Groupie-Tracker/autres_pages"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"

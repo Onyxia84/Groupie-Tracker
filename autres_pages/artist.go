@@ -1,4 +1,4 @@
-package artists
+package GroupieTracker
 
 import (
 	"encoding/json"
