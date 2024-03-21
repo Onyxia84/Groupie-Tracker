@@ -1,4 +1,4 @@
-package GroupieTracker
+package getstruct
 
 import (
 	"encoding/json"

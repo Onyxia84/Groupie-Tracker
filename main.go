@@ -1,7 +1,7 @@
 package main
 
 import (
-	autres_pages "Groupie-Tracker/autres_pages"
+	autres_pages "groupietracker/Autres_Pages"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -9,7 +9,6 @@ import (
 
 func main() {
 	myApp := app.New()
-
 	w := myApp.NewWindow("Groupie Tracker")
 
 	w.Resize(fyne.NewSize(1600, 800))

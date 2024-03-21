@@ -1,4 +1,4 @@
-package GroupieTracker
+package tools
 
 import (
 	"strconv"

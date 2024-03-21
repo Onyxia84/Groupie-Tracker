@@ -1,4 +1,4 @@
-package GroupieTracker
+package autres_pages
 
 import (
 	"image/color"

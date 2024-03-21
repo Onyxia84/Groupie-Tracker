@@ -1,6 +1,9 @@
-package GroupieTracker
+package autres_pages
 
 import (
+	"groupietracker/artists"
+	"groupietracker/getstruct"
+	"groupietracker/tools"
 	"image/color"
 	"net/http"
 	"strconv"
