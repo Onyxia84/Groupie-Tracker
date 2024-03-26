@@ -1,4 +1,4 @@
-package artists
+package main
 
 import (
 	"encoding/json"
