@@ -1,9 +1,9 @@
-package autres_pages
+package Autres_pages
 
 import (
 	"groupietracker/Artists"
-	"groupietracker/getstruct"
 	"groupietracker/Tools"
+	"groupietracker/getstruct"
 	"image/color"
 	"net/http"
 	"strconv"
@@ -49,13 +49,19 @@ func pagePrincipale(w *fyne.Window) {
 	subt_btn := widget.NewButton("", func() {
 	})
 
+	/*searchResults := container.NewVBox()
+
+	// Fonction pour mettre à jour les suggestions de recherche à chaque saisie dans le champ de recherche
+	e_recherche.OnChanged = func(text string) {
+		Tools.GenerateSearchSuggestions(text, searchResults, artist)
+	}*/
 	// Bouton "rechercher" avec la fonctionnalité rechercher
 
 	subt_btn = widget.NewButton("Rechercher", func() {
 		n_recherche = e_recherche.Text
-		n_recherche = main.ToLower(n_recherche)
+		n_recherche = Tools.ToLower(n_recherche)
 		for comID := 0; len(artist) > comID; comID++ {
-			if main.Recherche(artist[comID].Name, n_recherche) {
+			if Tools.Recherche(artist[comID].Name, n_recherche) {
 				listR = append(listR, comID)
 			}
 		}
@@ -108,14 +114,14 @@ func pagePrincipale(w *fyne.Window) {
 
 			contentName := canvas.NewText(artist[listR[id]].Name, color.RGBA{255, 255, 255, 1})
 			textMember := canvas.NewText("Liste des membres : ", color.RGBA{255, 0, 0, 1})
-			contentmember := canvas.NewText(""+main.StringAppend(artist[listR[id]].Members), color.RGBA{255, 255, 255, 1})
+			contentmember := canvas.NewText(""+Tools.StringAppend(artist[listR[id]].Members), color.RGBA{255, 255, 255, 1})
 			textCreationDate := canvas.NewText("Date de création : ", color.RGBA{255, 0, 0, 1})
 			contentCreationDate := canvas.NewText(strconv.Itoa(artist[listR[id]].CreationDate), color.RGBA{255, 255, 255, 1})
 			textAlbum := canvas.NewText("Premier album publié en : ", color.RGBA{255, 0, 0, 1})
 			contentFirstAlbum := canvas.NewText(""+artist[listR[id]].FirstAlbum, color.RGBA{255, 255, 255, 1})
-			myMapRelation := artist.GetLocationsRelation(artist, listR[id])
+			myMapRelation := Artists.GetLocationsRelation(artist, listR[id])
 			textLocation := canvas.NewText("Dates et lieux de concerts : ", color.RGBA{255, 0, 0, 1})
-			contentLocation := widget.NewLabel("" + main.StringAppend(main.MapString(myMapRelation.Locations)))
+			contentLocation := widget.NewLabel("" + Tools.StringAppend(Tools.MapString(myMapRelation.Locations)))
 
 			// FIN DE CREATION DES CANVAS
 
@@ -273,14 +279,14 @@ func pagePrincipale(w *fyne.Window) {
 
 		contentName := canvas.NewText(artist[id].Name, color.RGBA{255, 255, 255, 1})
 		textMember := canvas.NewText("Liste des membres : ", color.RGBA{255, 0, 0, 1})
-		contentmember := canvas.NewText(""+main.StringAppend(artist[id].Members), color.RGBA{255, 255, 255, 1})
+		contentmember := canvas.NewText(""+Tools.StringAppend(artist[id].Members), color.RGBA{255, 255, 255, 1})
 		textCreationDate := canvas.NewText("Date de création : ", color.RGBA{255, 0, 0, 1})
 		contentCreationDate := canvas.NewText(strconv.Itoa(artist[id].CreationDate), color.RGBA{255, 255, 255, 1})
 		textAlbum := canvas.NewText("Premier album publié en : ", color.RGBA{255, 0, 0, 1})
 		contentFirstAlbum := canvas.NewText(""+artist[id].FirstAlbum, color.RGBA{255, 255, 255, 1})
-		myMapRelation := artist.GetLocationsRelation(artist, id)
+		myMapRelation := Artists.GetLocationsRelation(artist, id)
 		textLocation := canvas.NewText("Dates et lieux de concerts : ", color.RGBA{255, 0, 0, 1})
-		contentLocation := widget.NewLabel("" + main.StringAppend(main.MapString(myMapRelation.Locations)))
+		contentLocation := widget.NewLabel("" + Tools.StringAppend(Tools.MapString(myMapRelation.Locations)))
 
 		// FIN DE CREATION DES CANVAS
 

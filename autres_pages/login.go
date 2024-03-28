@@ -1,4 +1,4 @@
-package autres_pages
+package Autres_pages
 
 import (
 	"image/color"

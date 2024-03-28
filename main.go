@@ -1,13 +1,11 @@
 package main
 
 import (
-	autres_pages "groupietracker/Autres_Pages"
-
-	"net/url"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/theme"
+	autres_pages "groupietracker/Autres_Pages"
+	"net/url"
 )
 
 func main() {

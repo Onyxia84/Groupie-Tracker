@@ -1,7 +1,6 @@
-package main
+package Tools
 
 import (
-	"strconv"
 	"strings"
 )
 
@@ -83,6 +82,43 @@ func Recherche(comparer string, recherche string) bool {
 	return false
 }
 
+/*func GenerateSearchSuggestions(text string, searchResults *fyne.Container, artists []getstruct.Artist) {
+	searchResults.Objects = nil
+
+	if text == "" {
+		return
+	}
+
+	var found bool
+	var correspondingResultAdded bool
+
+	for id, artist := range artists {
+		if strings.Contains(strings.ToLower(Artists.GetArtist()[id].Name), strings.ToLower(text)) {
+			found = true
+
+			if !correspondingResultAdded {
+				correspondingResultLabel := widget.NewLabel("Corresponding result: ")
+				searchResults.Add(correspondingResultLabel)
+
+				correspondingResultAdded = true
+			}
+
+			artistButton := widget.NewButton(Artists.GetArtist()[id].Name, func() {
+				artist = artist
+			})
+
+			searchResults.Add(layout.NewSpacer())
+
+			searchResults.Add(artistButton)
+		}
+	}
+
+	if !found {
+		noResultLabel := widget.NewLabel("No result")
+		searchResults.Add(noResultLabel)
+	}
+}
+
 func IntToString(n int) string {
 	return strconv.Itoa(n)
-}
+}*/
