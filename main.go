@@ -66,8 +66,8 @@ func main() {
 	w.SetMainMenu(menu)
 
 	w.Resize(fyne.NewSize(1200, 600))
-
-	// login.LoginPage(w)
+	autres_pages.PagePrincipale(&w)
+	login.LoginPage(&w)
 
 	w.ShowAndRun()
 }
