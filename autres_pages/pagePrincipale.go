@@ -199,7 +199,7 @@ func PagePrincipale(w *fyne.Window) {
 			split := container.NewHSplit(
 				listView,
 				contentt)
-			split.Offset = 0.2
+			split.Offset = 0.9
 
 			v := *w
 			v.SetContent(split)
@@ -213,7 +213,7 @@ func PagePrincipale(w *fyne.Window) {
 			searchZone := container.NewAdaptiveGrid(2, e_recherche, subt_btn)
 			searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone)
 			searchZoneStretchCentered := container.NewGridWithColumns(3, layout.NewSpacer(), searchZoneStretch, layout.NewSpacer())
-			searchZoneFinal := container.NewGridWithRows(5, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
+			searchZoneFinal := container.NewGridWithRows(8, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
 
 			splitPage := container.NewHSplit(
 				listView,

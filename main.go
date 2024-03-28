@@ -1,8 +1,6 @@
 package main
 
 import (
-	//  "groupietracker/autres_pages"
-	// "groupietracker/Filtres"
 	"groupietracker/login"
 	"net/url"
 	"fmt"
@@ -37,6 +35,8 @@ func main() {
 			}),
 		))
 
+
+
 	w.SetMainMenu(menu)
 
 
@@ -57,15 +57,17 @@ func main() {
 	})
 
 	checkboxes := container.NewVBox(
-		checkbox1,
-		checkbox2,
-		checkbox3,
-		checkbox4,
-		checkbox5,
-	)
+        checkbox1,
+        checkbox2,
+        checkbox3,
+        checkbox4,
+        checkbox5,
+    )
+
+
 	w.SetContent(checkboxes)
 
-	w.Resize(fyne.NewSize(1600, 800))
+	w.Resize(fyne.NewSize(1200, 600))
 
 	login.LoginPage(&w)
 
