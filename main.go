@@ -1,11 +1,12 @@
 package main
 
 import (
+	// "groupietracker/autres_pages"
+	"net/url"
+	"groupietracker/login"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/theme"
-	autres_pages "groupietracker/Autres_Pages"
-	"net/url"
 )
 
 func main() {
@@ -36,7 +37,7 @@ func main() {
 
 	w.Resize(fyne.NewSize(1600, 800))
 
-	autres_pages.LoginPage(&w)
+	login.LoginPage(&w)
 
 	w.ShowAndRun()
 }
