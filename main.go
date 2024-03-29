@@ -1,10 +1,14 @@
 package main
 
 import (
-	"groupietracker/login"
+	"groupietracker/Artists"
 	"groupietracker/autres_pages"
+	"groupietracker/login"
+	"groupietracker/api"
+
 	"fmt"
 	"net/url"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -30,18 +34,62 @@ func main() {
 			fyne.NewMenuItem("Afficher les filtres", func() {
 				checkbox1 := widget.NewCheck("Artiste", func(b bool) {
 					fmt.Println(fmt.Sprintf("%t", b))
+					if b == true {
+						for _, artist := range Artists.GetArtist(){
+							if len(artist.Members) == 1 {
+								a := artist.Name
+								fmt.Println(a)
+							}
+						}
+					}
+
 				})
 				checkbox2 := widget.NewCheck("Groupe", func(b bool) {
 					fmt.Println(fmt.Sprintf("%t", b))
+					if b == true {
+						for _, artist := range Artists.GetArtist(){
+							if len(artist.Members) > 1{
+							a := artist.Members
+							fmt.Println(a)
+							}
+						}
+					}
 				})
 				checkbox3 := widget.NewCheck("Date de création", func(b bool) {
 					fmt.Println(fmt.Sprintf("%t", b))
+					if b == true {
+						for _, artist := range Artists.GetArtist(){
+							a := artist.CreationDate
+							fmt.Println(a)
+						}
+					}
 				})
 				checkbox4 := widget.NewCheck("Lieu de concert", func(b bool) {
 					fmt.Println(fmt.Sprintf("%t", b))
+					if b == true {
+						for _, artist := range api.ApiLocations(){
+							a := artist.Locations
+							fmt.Println(a)
+						}
+					}
 				})
-				checkbox5 := widget.NewCheck("Nombre de Membre", func(b bool) {
+				checkbox5 := widget.NewCheck("premier album", func(b bool) {
 					fmt.Println(fmt.Sprintf("%t", b))
+					if b == true {
+						for _, artist := range Artists.GetArtist(){
+							a := artist.FirstAlbum
+							fmt.Println(a)
+						}
+					}
+				})
+				checkbox6 := widget.NewCheck("date de concert", func(b bool) {
+					fmt.Println(fmt.Sprintf("%t", b))
+					if b == true {
+						for _, artist := range api.ApiConcertDates(){
+							a := artist.ConcertDates
+							fmt.Println(a)
+						}
+					}
 				})
 
 				checkboxes := container.NewVBox(
@@ -50,6 +98,7 @@ func main() {
 					checkbox3,
 					checkbox4,
 					checkbox5,
+					checkbox6,
 				)
 
 				w.SetContent(checkboxes)
