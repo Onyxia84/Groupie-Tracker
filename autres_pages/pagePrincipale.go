@@ -41,7 +41,7 @@ func PagePrincipale(w *fyne.Window) {
 
 	// Création de la recherche (droite)
 
-	searchText := canvas.NewText("Recherchez quelque chose içi : ", color.White)
+	searchText := canvas.NewText("Recherchez quelque chose ici : ", color.White)
 	e_recherche := widget.NewEntry()
 	e_recherche.SetPlaceHolder("Cliquez ici pour rechercher :")
 	retour_btn := widget.NewButton("Retour", func() {
@@ -184,7 +184,7 @@ func PagePrincipale(w *fyne.Window) {
 				w = &v
 			})
 
-			contentText := widget.NewLabel("Recherchez quelque chose içi : ")
+			contentText := widget.NewLabel("Recherchez quelque chose ici : ")
 			searchZone = container.NewAdaptiveGrid(2, e_recherche, retour_btn)
 			searchZoneStretch = container.New(layout.NewVBoxLayout(), contentText, searchZone)
 			searchZoneFinished := container.New(layout.NewVBoxLayout(), searchZoneStretch)

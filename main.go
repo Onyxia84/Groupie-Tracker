@@ -5,10 +5,8 @@ import (
 	"groupietracker/autres_pages"
 	"groupietracker/login"
 	"groupietracker/api"
-
 	"fmt"
 	"net/url"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -100,6 +98,12 @@ func main() {
 					checkbox5,
 					checkbox6,
 				)
+
+				// retour_btn = widget.NewButton("Retour", func() {
+				// 	v := *w
+				// 	v.SetContent(splitPage)
+				// 	w = &v
+				// })
 
 				w.SetContent(checkboxes)
 			}),

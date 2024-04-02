@@ -5,6 +5,13 @@ import (
     "fmt"
     "net/http"
     "net/url"
+    "strconv"
+    // "fyne.io/fyne/v2/canvas"
+    // "fyne.io/fyne/v2/container"
+    // "fyne.io/fyne/v2/widget"
+    // "fyne.io/fyne/v2"
+    // "fyne.io/fyne/v2/widget/x"
+
 )
 
 type GeoLocation struct {
@@ -44,4 +51,35 @@ func ConvertAddressToGeoCoord(address string) (GeoLocation, error) {
     }
 
     return geoLocation, nil
+}
+
+// func CreateMapWithGeoLocation(latitude, longitude float64) fyne.CanvasObject {
+
+//     mapObject := canvas.NewMapWithMarker("latitude", "longitude") // prendre les coordonnées de l'api
+
+//     mapObject.SetZoomLevel(15)
+
+//     mapContainer := container.NewBorder(
+//         widget.NewLabel("Map"),
+//         nil,
+//         nil,
+//         mapObject,
+//     )
+
+//     return mapContainer
+// }
+
+func GetLocationsData(ID int) GeoLocation { // a utiliser
+    var geoLocation GeoLocation
+    url := "https://groupietrackers.herokuapp.com/api/locations"
+    data, err := http.Get(url + "/" + strconv.Itoa(ID))
+    if err != nil {
+        print(err)
+    }
+    defer data.Body.Close()
+    err = json.NewDecoder(data.Body).Decode(&geoLocation)
+    if err != nil {
+        print(err)
+    }
+    return geoLocation
 }
