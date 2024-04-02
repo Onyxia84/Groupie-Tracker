@@ -1,25 +1,25 @@
 package autres_pages
 
 import (
-	"groupietracker/Artists"
-	"groupietracker/Tools"
-	"groupietracker/getstruct"
-	"image/color"
-	"net/http"
-	"strconv"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"groupietracker/Artists"
+	Getstruct "groupietracker/getstruct"
+	"groupietracker/tools"
+	"image/color"
+	"net/http"
+	"strconv"
+	"strings"
 )
 
 func PagePrincipale(w *fyne.Window) {
 
 	// Déclaration des variables
 
-	var artist []getstruct.Artist
+	var artist []Getstruct.Artist
 	artist = Artists.GetArtist()
 	var listR []int
 	var listVierge []int
@@ -41,7 +41,7 @@ func PagePrincipale(w *fyne.Window) {
 
 	// Création de la recherche (droite)
 
-	searchText := canvas.NewText("Recherchez quelque chose ici : ", color.White)
+	searchText := canvas.NewText("Recherchez quelque chose içi : ", color.White)
 	e_recherche := widget.NewEntry()
 	e_recherche.SetPlaceHolder("Cliquez ici pour rechercher :")
 	retour_btn := widget.NewButton("Retour", func() {
@@ -49,12 +49,8 @@ func PagePrincipale(w *fyne.Window) {
 	subt_btn := widget.NewButton("", func() {
 	})
 
-	/*searchResults := container.NewVBox()
+	// Dans la fonction pagePrincipale
 
-	// Fonction pour mettre à jour les suggestions de recherche à chaque saisie dans le champ de recherche
-	e_recherche.OnChanged = func(text string) {
-		Tools.GenerateSearchSuggestions(text, searchResults, artist)
-	}*/
 	// Bouton "rechercher" avec la fonctionnalité rechercher
 
 	subt_btn = widget.NewButton("Rechercher", func() {
@@ -184,14 +180,9 @@ func PagePrincipale(w *fyne.Window) {
 				w = &v
 			})
 
-			contentText := widget.NewLabel("Recherchez quelque chose ici : ")
-			searchZone = container.NewAdaptiveGrid(2, e_recherche, retour_btn)
-			searchZoneStretch = container.New(layout.NewVBoxLayout(), contentText, searchZone)
-			searchZoneFinished := container.New(layout.NewVBoxLayout(), searchZoneStretch)
-
 			// END BOTTOM PAGE
 
-			content := container.NewVBox(pageTop, rightMidContainer_Items, layout.NewSpacer(), searchZoneFinished)
+			content := container.NewVBox(pageTop, rightMidContainer_Items, layout.NewSpacer())
 			contentt := container.NewVScroll(content)
 
 			// FIN ORGANISATION
@@ -199,7 +190,7 @@ func PagePrincipale(w *fyne.Window) {
 			split := container.NewHSplit(
 				listView,
 				contentt)
-			split.Offset = 0.9
+			split.Offset = 0.2
 
 			v := *w
 			v.SetContent(split)
@@ -210,17 +201,171 @@ func PagePrincipale(w *fyne.Window) {
 
 		retour_btn = widget.NewButton("Effacer les résultats de la recherche", func() {
 
-			searchZone := container.NewAdaptiveGrid(2, e_recherche, subt_btn)
-			searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone)
-			searchZoneStretchCentered := container.NewGridWithColumns(3, layout.NewSpacer(), searchZoneStretch, layout.NewSpacer())
-			searchZoneFinal := container.NewGridWithRows(8, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
+			sugg := container.NewVBox()
+			sugg2 := container.NewScroll(sugg)
+			e_recherche.OnChanged = func(query string) {
+				searchText1 := strings.ToLower(query)
+				if len(query) > 0 {
+					sugg.Objects = nil
 
+					for _, artist1 := range Artists.GetArtist() {
+						if strings.Contains(strings.ToLower(artist1.Name), searchText1) {
+							artistImageURL := artist1.Image
+							artistImageResource, _ := fyne.LoadResourceFromURLString(artistImageURL)
+							buttonText := artist1.Name + " - Groupe "
+
+							// Créez un widget d'image
+							id := 0
+							// Créez un bouton avec l'image et le texte
+							imageButton := widget.NewButton("", func() {
+								for i := 0; i < 52; i++ {
+									if buttonText == artist[i].Name+" - Groupe " {
+										id = i
+										break
+									}
+									id = i
+								}
+								searchZone := container.NewAdaptiveGrid(2, e_recherche, subt_btn)
+								sugg2.SetMinSize(fyne.NewSize(200, 200))
+								searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone, sugg2)
+								searchZoneStretchCentered := container.NewGridWithColumns(3, layout.NewSpacer(), searchZoneStretch, layout.NewSpacer())
+								searchZoneFinal := container.NewGridWithRows(5, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
+
+								splitPage := container.NewHSplit(
+									listView,
+									searchZoneFinal)
+								splitPage.Offset = 0.2
+
+								retour_btn = widget.NewButton("Retour", func() {
+									v := *w
+									v.SetContent(splitPage)
+									v.SetFullScreen(false)
+									v.SetFullScreen(true)
+									w = &v
+								})
+
+								// CREATION DES CANVAS
+
+								// Récupérer l'image de l'artiste
+
+								tempo, _ := http.Get(artist[id].Image)
+								contentImage := canvas.NewImageFromReader(tempo.Body, "image")
+								contentImage.FillMode = canvas.ImageFillOriginal
+
+								// Créer et initliaser les textes
+
+								contentName := canvas.NewText(artist[id].Name, color.RGBA{255, 255, 255, 1})
+								textMember := canvas.NewText("Liste des membres : ", color.RGBA{255, 0, 0, 1})
+								contentmember := canvas.NewText(""+tools.StringAppend(artist[id].Members), color.RGBA{255, 255, 255, 1})
+								textCreationDate := canvas.NewText("Date de création : ", color.RGBA{255, 0, 0, 1})
+								contentCreationDate := canvas.NewText(strconv.Itoa(artist[id].CreationDate), color.RGBA{255, 255, 255, 1})
+								textAlbum := canvas.NewText("Premier album publié en : ", color.RGBA{255, 0, 0, 1})
+								contentFirstAlbum := canvas.NewText(""+artist[id].FirstAlbum, color.RGBA{255, 255, 255, 1})
+								myMapRelation := Artists.GetLocationsRelation(artist, id)
+								textLocation := canvas.NewText("Dates et lieux de concerts : ", color.RGBA{255, 0, 0, 1})
+								contentLocation := widget.NewLabel("" + tools.StringAppend(tools.MapString(myMapRelation.Locations)))
+
+								// FIN DE CREATION DES CANVAS
+
+								// Styliser les canvas
+
+								contentName.Alignment = fyne.TextAlignCenter
+								contentName.TextStyle = fyne.TextStyle{Bold: true}
+								contentName.TextSize = 30
+
+								textMember.TextSize = 20
+								textMember.Alignment = fyne.TextAlignCenter
+								textMember.TextStyle = fyne.TextStyle{Bold: true}
+
+								contentmember.TextSize = 18
+								contentmember.Alignment = fyne.TextAlignCenter
+
+								textCreationDate.TextSize = 20
+								textCreationDate.Alignment = fyne.TextAlignCenter
+								textCreationDate.TextStyle = fyne.TextStyle{Bold: true}
+
+								contentCreationDate.TextSize = 18
+								contentCreationDate.Alignment = fyne.TextAlignCenter
+
+								textAlbum.TextSize = 20
+								textAlbum.Alignment = fyne.TextAlignCenter
+								textAlbum.TextStyle = fyne.TextStyle{Bold: true}
+
+								contentFirstAlbum.TextSize = 18
+								contentFirstAlbum.Alignment = fyne.TextAlignCenter
+
+								textLocation.TextSize = 20
+								textLocation.Alignment = fyne.TextAlignCenter
+								textLocation.TextStyle = fyne.TextStyle{Bold: true}
+
+								contentLocation.Wrapping = fyne.TextWrapWord
+								contentLocation.Alignment = fyne.TextAlignCenter
+
+								// Organiser les canvas et containers
+								memberContainer := container.New(layout.NewGridLayoutWithRows(2), textMember, contentmember)
+								creationDateContainer := container.New(layout.NewGridLayoutWithRows(2), textCreationDate, contentCreationDate)
+								albumContainer := container.New(layout.NewGridLayoutWithRows(2), textAlbum, contentFirstAlbum)
+								locationContainer := container.New(layout.NewGridLayoutWithRows(2), textLocation, contentLocation)
+
+								// TOP PAGE
+
+								artistNameAndImage := container.NewVBox(contentName, contentImage)
+								spacerAndButton := container.New(layout.NewGridLayoutWithRows(6), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), retour_btn)
+								pageTop := container.New(layout.NewGridLayoutWithColumns(3), layout.NewSpacer(), artistNameAndImage, spacerAndButton)
+
+								// MIDDLE PAGE
+
+								rightMidContainer_Items := container.NewGridWithRows(4, memberContainer, creationDateContainer, albumContainer, locationContainer)
+
+								// END MIDDLE PAGE
+								// BOTTOM PAGE
+
+								retour_btn = widget.NewButton("Effacer les résultats de la recherche", func() {
+									v := *w
+									v.SetContent(splitPage)
+									w = &v
+								})
+
+								// END BOTTOM PAGE
+
+								content := container.NewVBox(pageTop, rightMidContainer_Items, layout.NewSpacer())
+								contentt := container.NewVScroll(content)
+
+								// FIN ORGANISATION
+
+								split := container.NewHSplit(
+									listView,
+									contentt)
+								split.Offset = 0.2
+
+								v := *w
+								v.SetContent(split)
+								w = &v
+							})
+
+							// Ajoutez l'image et le texte au bouton
+							imageButton.Importance = widget.LowImportance
+							imageButton.SetIcon(artistImageResource)
+							imageButton.SetText(buttonText)
+							sugg.Add(imageButton)
+						}
+					}
+					sugg.Show()
+					sugg2.Show()
+				} else {
+				}
+			}
+
+			searchZone := container.NewAdaptiveGrid(2, e_recherche, subt_btn)
+			sugg2.SetMinSize(fyne.NewSize(200, 200))
+			searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone, sugg2)
+			searchZoneStretchCentered := container.NewGridWithColumns(3, layout.NewSpacer(), searchZoneStretch, layout.NewSpacer())
+			searchZoneFinal := container.NewGridWithRows(5, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
+			// Affichage
 			splitPage := container.NewHSplit(
 				listView,
 				searchZoneFinal)
 			splitPage.Offset = 0.2
-
-			// Affichage
 
 			v := *w
 			v.SetContent(splitPage)
@@ -247,9 +392,161 @@ func PagePrincipale(w *fyne.Window) {
 	listView.OnSelected = func(id widget.ListItemID) {
 
 		// Disposition de la page par défaut
+		sugg := container.NewVBox()
+		sugg2 := container.NewScroll(sugg)
+		e_recherche.OnChanged = func(query string) {
+			searchText1 := strings.ToLower(query)
+			if len(query) > 0 {
+				sugg.Objects = nil
+				for _, artist1 := range Artists.GetArtist() {
+					if strings.Contains(strings.ToLower(artist1.Name), searchText1) {
+						artistImageURL := artist1.Image
+						artistImageResource, _ := fyne.LoadResourceFromURLString(artistImageURL)
+						buttonText := artist1.Name + " - Groupe "
+
+						// Créez un widget d'image
+						id := 0
+						// Créez un bouton avec l'image et le texte
+						imageButton := widget.NewButton("", func() {
+							for i := 0; i < 52; i++ {
+								if buttonText == artist[i].Name+" - Groupe " {
+									id = i
+									break
+								}
+								id = i
+							}
+							searchZone := container.NewAdaptiveGrid(2, e_recherche, subt_btn)
+							sugg2.SetMinSize(fyne.NewSize(200, 200))
+							searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone, sugg2)
+							searchZoneStretchCentered := container.NewGridWithColumns(3, layout.NewSpacer(), searchZoneStretch, layout.NewSpacer())
+							searchZoneFinal := container.NewGridWithRows(5, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
+
+							splitPage := container.NewHSplit(
+								listView,
+								searchZoneFinal)
+							splitPage.Offset = 0.2
+
+							retour_btn = widget.NewButton("Retour", func() {
+								v := *w
+								v.SetContent(splitPage)
+								v.SetFullScreen(false)
+								v.SetFullScreen(true)
+								w = &v
+							})
+
+							// CREATION DES CANVAS
+
+							// Récupérer l'image de l'artiste
+
+							tempo, _ := http.Get(artist[id].Image)
+							contentImage := canvas.NewImageFromReader(tempo.Body, "image")
+							contentImage.FillMode = canvas.ImageFillOriginal
+
+							// Créer et initliaser les textes
+
+							contentName := canvas.NewText(artist[id].Name, color.RGBA{255, 255, 255, 1})
+							textMember := canvas.NewText("Liste des membres : ", color.RGBA{255, 0, 0, 1})
+							contentmember := canvas.NewText(""+tools.StringAppend(artist[id].Members), color.RGBA{255, 255, 255, 1})
+							textCreationDate := canvas.NewText("Date de création : ", color.RGBA{255, 0, 0, 1})
+							contentCreationDate := canvas.NewText(strconv.Itoa(artist[id].CreationDate), color.RGBA{255, 255, 255, 1})
+							textAlbum := canvas.NewText("Premier album publié en : ", color.RGBA{255, 0, 0, 1})
+							contentFirstAlbum := canvas.NewText(""+artist[id].FirstAlbum, color.RGBA{255, 255, 255, 1})
+							myMapRelation := Artists.GetLocationsRelation(artist, id)
+							textLocation := canvas.NewText("Dates et lieux de concerts : ", color.RGBA{255, 0, 0, 1})
+							contentLocation := widget.NewLabel("" + tools.StringAppend(tools.MapString(myMapRelation.Locations)))
+
+							// FIN DE CREATION DES CANVAS
+
+							// Styliser les canvas
+
+							contentName.Alignment = fyne.TextAlignCenter
+							contentName.TextStyle = fyne.TextStyle{Bold: true}
+							contentName.TextSize = 30
+
+							textMember.TextSize = 20
+							textMember.Alignment = fyne.TextAlignCenter
+							textMember.TextStyle = fyne.TextStyle{Bold: true}
+
+							contentmember.TextSize = 18
+							contentmember.Alignment = fyne.TextAlignCenter
+
+							textCreationDate.TextSize = 20
+							textCreationDate.Alignment = fyne.TextAlignCenter
+							textCreationDate.TextStyle = fyne.TextStyle{Bold: true}
+
+							contentCreationDate.TextSize = 18
+							contentCreationDate.Alignment = fyne.TextAlignCenter
+
+							textAlbum.TextSize = 20
+							textAlbum.Alignment = fyne.TextAlignCenter
+							textAlbum.TextStyle = fyne.TextStyle{Bold: true}
+
+							contentFirstAlbum.TextSize = 18
+							contentFirstAlbum.Alignment = fyne.TextAlignCenter
+
+							textLocation.TextSize = 20
+							textLocation.Alignment = fyne.TextAlignCenter
+							textLocation.TextStyle = fyne.TextStyle{Bold: true}
+
+							contentLocation.Wrapping = fyne.TextWrapWord
+							contentLocation.Alignment = fyne.TextAlignCenter
+
+							// Organiser les canvas et containers
+							memberContainer := container.New(layout.NewGridLayoutWithRows(2), textMember, contentmember)
+							creationDateContainer := container.New(layout.NewGridLayoutWithRows(2), textCreationDate, contentCreationDate)
+							albumContainer := container.New(layout.NewGridLayoutWithRows(2), textAlbum, contentFirstAlbum)
+							locationContainer := container.New(layout.NewGridLayoutWithRows(2), textLocation, contentLocation)
+
+							// TOP PAGE
+
+							artistNameAndImage := container.NewVBox(contentName, contentImage)
+							spacerAndButton := container.New(layout.NewGridLayoutWithRows(6), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), retour_btn)
+							pageTop := container.New(layout.NewGridLayoutWithColumns(3), layout.NewSpacer(), artistNameAndImage, spacerAndButton)
+
+							// MIDDLE PAGE
+
+							rightMidContainer_Items := container.NewGridWithRows(4, memberContainer, creationDateContainer, albumContainer, locationContainer)
+
+							// END MIDDLE PAGE
+							// BOTTOM PAGE
+
+							retour_btn = widget.NewButton("Effacer les résultats de la recherche", func() {
+								v := *w
+								v.SetContent(splitPage)
+								w = &v
+							})
+
+							// END BOTTOM PAGE
+
+							content := container.NewVBox(pageTop, rightMidContainer_Items, layout.NewSpacer())
+							contentt := container.NewVScroll(content)
+
+							// FIN ORGANISATION
+
+							split := container.NewHSplit(
+								listView,
+								contentt)
+							split.Offset = 0.2
+
+							v := *w
+							v.SetContent(split)
+							w = &v
+						})
+
+						// Ajoutez l'image et le texte au bouton
+						imageButton.Importance = widget.LowImportance
+						imageButton.SetIcon(artistImageResource)
+						imageButton.SetText(buttonText)
+						sugg.Add(imageButton)
+					}
+				}
+			} else {
+			}
+		}
 
 		searchZone := container.NewAdaptiveGrid(2, e_recherche, subt_btn)
-		searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone)
+		sugg2.SetMinSize(fyne.NewSize(200, 200))
+		searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone, sugg2)
 		searchZoneStretchCentered := container.NewGridWithColumns(3, layout.NewSpacer(), searchZoneStretch, layout.NewSpacer())
 		searchZoneFinal := container.NewGridWithRows(5, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
 
@@ -264,6 +561,8 @@ func PagePrincipale(w *fyne.Window) {
 
 			v := *w
 			v.SetContent(splitPage)
+			v.SetFullScreen(false)
+			v.SetFullScreen(true)
 			w = &v
 		})
 
@@ -343,14 +642,9 @@ func PagePrincipale(w *fyne.Window) {
 		// END MIDDLE PAGE
 		// BOTTOM PAGE
 
-		contentText := widget.NewLabel("Recherchez quelque chose içi : ")
-		searchZone = container.NewAdaptiveGrid(2, e_recherche, subt_btn)
-		searchZoneStretch = container.New(layout.NewVBoxLayout(), contentText, searchZone)
-		searchZoneFinished := container.New(layout.NewVBoxLayout(), searchZoneStretch)
-
 		// END BOTTOM PAGE
 
-		content := container.NewVBox(pageTop, rightMidContainer_Items, layout.NewSpacer(), searchZoneFinished)
+		content := container.NewVBox(pageTop, rightMidContainer_Items, layout.NewSpacer())
 		contentt := container.NewVScroll(content)
 
 		// FIN ORGANISATION
@@ -369,8 +663,164 @@ func PagePrincipale(w *fyne.Window) {
 
 	// Disposition de la page par défaut
 
+	sugg := container.NewVBox()
+	sugg2 := container.NewScroll(sugg)
+	e_recherche.OnChanged = func(query string) {
+		searchText1 := strings.ToLower(query)
+		if len(query) > 0 {
+			sugg.Objects = nil
+
+			for _, artist1 := range Artists.GetArtist() {
+				if strings.Contains(strings.ToLower(artist1.Name), searchText1) {
+					artistImageURL := artist1.Image
+					artistImageResource, _ := fyne.LoadResourceFromURLString(artistImageURL)
+					buttonText := artist1.Name + " - Groupe "
+
+					// Créez un widget d'image
+					id := 0
+					// Créez un bouton avec l'image et le texte
+					imageButton := widget.NewButton("", func() {
+						for i := 0; i < 52; i++ {
+							if buttonText == artist[i].Name+" - Groupe " {
+								id = i
+								break
+							}
+							id = i
+						}
+						searchZone := container.NewAdaptiveGrid(2, e_recherche, subt_btn)
+						sugg2.SetMinSize(fyne.NewSize(200, 200))
+						searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone, sugg2)
+						searchZoneStretchCentered := container.NewGridWithColumns(3, layout.NewSpacer(), searchZoneStretch, layout.NewSpacer())
+						searchZoneFinal := container.NewGridWithRows(5, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
+
+						splitPage := container.NewHSplit(
+							listView,
+							searchZoneFinal)
+						splitPage.Offset = 0.2
+
+						retour_btn = widget.NewButton("Retour", func() {
+							v := *w
+							v.SetContent(splitPage)
+							v.SetFullScreen(false)
+							v.SetFullScreen(true)
+							w = &v
+						})
+
+						// CREATION DES CANVAS
+
+						// Récupérer l'image de l'artiste
+
+						tempo, _ := http.Get(artist[id].Image)
+						contentImage := canvas.NewImageFromReader(tempo.Body, "image")
+						contentImage.FillMode = canvas.ImageFillOriginal
+
+						// Créer et initliaser les textes
+
+						contentName := canvas.NewText(artist[id].Name, color.RGBA{255, 255, 255, 1})
+						textMember := canvas.NewText("Liste des membres : ", color.RGBA{255, 0, 0, 1})
+						contentmember := canvas.NewText(""+tools.StringAppend(artist[id].Members), color.RGBA{255, 255, 255, 1})
+						textCreationDate := canvas.NewText("Date de création : ", color.RGBA{255, 0, 0, 1})
+						contentCreationDate := canvas.NewText(strconv.Itoa(artist[id].CreationDate), color.RGBA{255, 255, 255, 1})
+						textAlbum := canvas.NewText("Premier album publié en : ", color.RGBA{255, 0, 0, 1})
+						contentFirstAlbum := canvas.NewText(""+artist[id].FirstAlbum, color.RGBA{255, 255, 255, 1})
+						myMapRelation := Artists.GetLocationsRelation(artist, id)
+						textLocation := canvas.NewText("Dates et lieux de concerts : ", color.RGBA{255, 0, 0, 1})
+						contentLocation := widget.NewLabel("" + tools.StringAppend(tools.MapString(myMapRelation.Locations)))
+
+						// FIN DE CREATION DES CANVAS
+
+						// Styliser les canvas
+
+						contentName.Alignment = fyne.TextAlignCenter
+						contentName.TextStyle = fyne.TextStyle{Bold: true}
+						contentName.TextSize = 30
+
+						textMember.TextSize = 20
+						textMember.Alignment = fyne.TextAlignCenter
+						textMember.TextStyle = fyne.TextStyle{Bold: true}
+
+						contentmember.TextSize = 18
+						contentmember.Alignment = fyne.TextAlignCenter
+
+						textCreationDate.TextSize = 20
+						textCreationDate.Alignment = fyne.TextAlignCenter
+						textCreationDate.TextStyle = fyne.TextStyle{Bold: true}
+
+						contentCreationDate.TextSize = 18
+						contentCreationDate.Alignment = fyne.TextAlignCenter
+
+						textAlbum.TextSize = 20
+						textAlbum.Alignment = fyne.TextAlignCenter
+						textAlbum.TextStyle = fyne.TextStyle{Bold: true}
+
+						contentFirstAlbum.TextSize = 18
+						contentFirstAlbum.Alignment = fyne.TextAlignCenter
+
+						textLocation.TextSize = 20
+						textLocation.Alignment = fyne.TextAlignCenter
+						textLocation.TextStyle = fyne.TextStyle{Bold: true}
+
+						contentLocation.Wrapping = fyne.TextWrapWord
+						contentLocation.Alignment = fyne.TextAlignCenter
+
+						// Organiser les canvas et containers
+						memberContainer := container.New(layout.NewGridLayoutWithRows(2), textMember, contentmember)
+						creationDateContainer := container.New(layout.NewGridLayoutWithRows(2), textCreationDate, contentCreationDate)
+						albumContainer := container.New(layout.NewGridLayoutWithRows(2), textAlbum, contentFirstAlbum)
+						locationContainer := container.New(layout.NewGridLayoutWithRows(2), textLocation, contentLocation)
+
+						// TOP PAGE
+
+						artistNameAndImage := container.NewVBox(contentName, contentImage)
+						spacerAndButton := container.New(layout.NewGridLayoutWithRows(6), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), layout.NewSpacer(), retour_btn)
+						pageTop := container.New(layout.NewGridLayoutWithColumns(3), layout.NewSpacer(), artistNameAndImage, spacerAndButton)
+
+						// MIDDLE PAGE
+
+						rightMidContainer_Items := container.NewGridWithRows(4, memberContainer, creationDateContainer, albumContainer, locationContainer)
+
+						// END MIDDLE PAGE
+						// BOTTOM PAGE
+
+						retour_btn = widget.NewButton("Effacer les résultats de la recherche", func() {
+							v := *w
+							v.SetContent(splitPage)
+							w = &v
+						})
+
+						// END BOTTOM PAGE
+
+						content := container.NewVBox(pageTop, rightMidContainer_Items, layout.NewSpacer())
+						contentt := container.NewVScroll(content)
+
+						// FIN ORGANISATION
+
+						split := container.NewHSplit(
+							listView,
+							contentt)
+						split.Offset = 0.2
+
+						v := *w
+						v.SetContent(split)
+						w = &v
+					})
+
+					// Ajoutez l'image et le texte au bouton
+					imageButton.Importance = widget.LowImportance
+					imageButton.SetIcon(artistImageResource)
+					imageButton.SetText(buttonText)
+					sugg.Add(imageButton)
+				}
+			}
+			sugg.Show()
+			sugg2.Show()
+		} else {
+		}
+	}
+
 	searchZone := container.NewAdaptiveGrid(2, e_recherche, subt_btn)
-	searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone)
+	sugg2.SetMinSize(fyne.NewSize(200, 200))
+	searchZoneStretch := container.New(layout.NewVBoxLayout(), searchText, searchZone, sugg2)
 	searchZoneStretchCentered := container.NewGridWithColumns(3, layout.NewSpacer(), searchZoneStretch, layout.NewSpacer())
 	searchZoneFinal := container.NewGridWithRows(5, layout.NewSpacer(), layout.NewSpacer(), searchZoneStretchCentered, layout.NewSpacer(), layout.NewSpacer())
 
@@ -378,10 +828,8 @@ func PagePrincipale(w *fyne.Window) {
 		listView,
 		searchZoneFinal)
 	splitPage.Offset = 0.2
+	(*w).SetContent(splitPage)
+	(*w).SetFullScreen(false)
+	(*w).SetFullScreen(true)
 
-	// Affichage
-
-	v := *w
-	v.SetContent(splitPage)
-	w = &v
 }

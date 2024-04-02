@@ -1,7 +1,6 @@
 package login
 
 import (
-	"image/color"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -9,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"groupietracker/autres_pages"
+	"image/color"
 )
 
 func LoginPage(w *fyne.Window) {
@@ -22,7 +22,7 @@ func LoginPage(w *fyne.Window) {
 	mdpEntry.Resize(fyne.NewSize(200, 30))
 
 	btn := widget.NewButton("", func() {
-	autres_pages.PagePrincipale(w)
+		autres_pages.PagePrincipale(w)
 	})
 	btn_colour := canvas.NewRectangle(color.RGBA{0, 240, 0, 1})
 	btn_icon := widget.NewIcon(theme.ConfirmIcon())
